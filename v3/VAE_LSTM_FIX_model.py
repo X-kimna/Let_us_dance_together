@@ -30,7 +30,7 @@ class VAE_LSTM_FIX_model:
         self.log_dir=log_dir
         self.motion_vae_ckpt_dir=motion_vae_ckpt_dir
         self.music_vae_ckpt_dir=music_vae_ckpt_dir
-        self.dense_dim=8
+        self.dense_dim=16
         self.rnn_input_dim = 32
         self.rnn_output_dim = 32
         self.rnn_unit_size = rnn_unit_size
@@ -60,7 +60,6 @@ class VAE_LSTM_FIX_model:
                                           overlap_interval=10,
                                           batch_size=self.batch_size)
 
-        self.dense1_dim=8
 
         self.musicVae=MusicVae()
         self.motionVae=MotionVae()
@@ -95,7 +94,7 @@ class VAE_LSTM_FIX_model:
         with tf.variable_scope("lstm_2"):
 
             concat2 = tf.concat([dense_1, temporal_input], 2)
-            concat2 = tf.reshape(concat2, [-1,self.dense1_dim + self.temporal_dim])
+            concat2 = tf.reshape(concat2, [-1,self.dense_dim + self.temporal_dim])
             concat_rnn2 = tf.nn.bias_add(tf.matmul(concat2,tf.Variable(tf.truncated_normal([self.dense_dim + self.temporal_dim, self.rnn_input_dim]))),
                                          bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
             concat_rnn2 = tf.reshape(concat_rnn2, [-1, self.time_step, self.rnn_input_dim])
@@ -143,7 +142,8 @@ class VAE_LSTM_FIX_model:
         if trainable:
             def attn_cell():
                 return tf.contrib.rnn.DropoutWrapper(
-                    self.lstm_cell()
+                    self.lstm_cell(),
+                    output_keep_prob=0.9
                 )
         # ----------------------------------motion encoder-------------------------------------
         motion_input=tf.reshape(motion_input, [-1,self.motion_dim]) 
@@ -164,35 +164,35 @@ class VAE_LSTM_FIX_model:
         #                              self.motion_dim,
         #                              activation=None,
         #                              trainable=trainable)
-        # ----------------------------------lstm 10-------------------------------------
-        with tf.variable_scope("lstm_10"):
-            concat10 = tf.concat([motion_predict, temporal_input], 2)
-            concat10 = tf.reshape(concat10, [-1, self.motion_dim + self.temporal_dim])
-            concat_rnn10 = tf.nn.bias_add(
-                tf.matmul(concat10,
-                          tf.Variable(tf.truncated_normal([self.motion_dim + self.temporal_dim, self.rnn_input_dim]))),
-                bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
-            concat_rnn10 = tf.reshape(concat_rnn10,
-                                      [-1, self.time_step, self.rnn_input_dim])
-            cell10 = tf.contrib.rnn.MultiRNNCell([attn_cell() for _ in range(3)])
-            init_state10 = cell10.zero_state(batch_size, dtype=tf.float32)
-            output_rnn10, final_states10 = tf.nn.dynamic_rnn(cell10,
-                                                             concat_rnn10,
-                                                             initial_state=init_state10,
-                                                             dtype=tf.float32)
-            output10 = tf.reshape(output_rnn10, [-1, self.rnn_unit_size])
-            pred10 = tf.nn.bias_add(
-                tf.matmul(output10, tf.Variable(tf.truncated_normal([self.rnn_unit_size, self.rnn_output_dim]))),
-                bias=tf.Variable(tf.zeros(shape=[self.rnn_output_dim])))
-
-            pred10 = tf.reshape(pred10, [-1, self.time_step, self.rnn_output_dim])
-
-        # ----------------------------------dense 11-------------------------------------
-        with tf.variable_scope("dense_11"):
-            motion_predict = tf.layers.dense(pred10,
-                                                        self.motion_dim,
-                                                        activation=None,
-                                                        trainable=trainable)
+        # # ----------------------------------lstm 10-------------------------------------
+        # with tf.variable_scope("lstm_10"):
+        #     concat10 = tf.concat([motion_predict, temporal_input], 2)
+        #     concat10 = tf.reshape(concat10, [-1, self.motion_dim + self.temporal_dim])
+        #     concat_rnn10 = tf.nn.bias_add(
+        #         tf.matmul(concat10,
+        #                   tf.Variable(tf.truncated_normal([self.motion_dim + self.temporal_dim, self.rnn_input_dim]))),
+        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
+        #     concat_rnn10 = tf.reshape(concat_rnn10,
+        #                               [-1, self.time_step, self.rnn_input_dim])
+        #     cell10 = tf.contrib.rnn.MultiRNNCell([attn_cell() for _ in range(3)])
+        #     init_state10 = cell10.zero_state(batch_size, dtype=tf.float32)
+        #     output_rnn10, final_states10 = tf.nn.dynamic_rnn(cell10,
+        #                                                      concat_rnn10,
+        #                                                      initial_state=init_state10,
+        #                                                      dtype=tf.float32)
+        #     output10 = tf.reshape(output_rnn10, [-1, self.rnn_unit_size])
+        #     pred10 = tf.nn.bias_add(
+        #         tf.matmul(output10, tf.Variable(tf.truncated_normal([self.rnn_unit_size, self.rnn_output_dim]))),
+        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_output_dim])))
+        #
+        #     pred10 = tf.reshape(pred10, [-1, self.time_step, self.rnn_output_dim])
+        #
+        # # ----------------------------------dense 11-------------------------------------
+        # with tf.variable_scope("dense_11"):
+        #     motion_predict = tf.layers.dense(pred10,
+        #                                                 self.motion_dim,
+        #                                                 activation=None,
+        #                                                 trainable=trainable)
 
 
         return motion_predict,loss_motion_latent
@@ -330,7 +330,7 @@ class VAE_LSTM_FIX_model:
                     if step % 10 == 0:
                         print("epoch: %d step: %d, total loss: %.9f,motion_loss: %.9f, extr loss: %.9f,music_loss: %.9f,loss_motion_latent: %.9f, predict loss: %.9f " % (
                             i, step, loss_,motion_loss_, loss_e, loss_m,loss_ml,loss_p))
-                writer.add_summary(sum, i)
+                writer.add_summary(sum, i+691)
                 print("epoch: %d loss_avg: %f, " % (i, loss_avg / step))
                 if (i + 1) % 10 == 0:
                     print("保存模型：", saver.save(sess,os.path.join(self.model_save_dir,'stock2.model'), global_step=i))

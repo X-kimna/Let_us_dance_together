@@ -8,9 +8,10 @@ for file in dirs:
         data = json.load(fin)
     data_motion = np.array(data['skeletons'])
     center=data['center']
-    for i in range(2,data_motion.shape[0]-2):
-        if(np.sqrt(np.sum(np.square(data_motion[i] - data_motion[i+1])))>16):
-            data_motion[i]=(data_motion[i]+data_motion[i+1])/2
+    for i in range(data_motion.shape[0]-1):
+        for j in range(data_motion.shape[1]-1):
+            if(np.sqrt(np.sum(np.square(data_motion[i][j] - data_motion[i+1][j])))>0.5):
+                data_motion[i][j]=(data_motion[i][j]+data_motion[i+1][j])/2
 
     data = {"length": data['length'], "skeletons": data_motion.tolist(),"center":center}
     with open('./v3/interpolation_result/'+file, 'w') as file_object:
