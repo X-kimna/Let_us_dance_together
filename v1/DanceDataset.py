@@ -109,22 +109,11 @@ class DanceDataset:
         self.train_size = len(normalized_acoustic_data)
 
         train_dataset = train_dataset.batch(self.batch_size).shuffle(buffer_size=1000000)
-        print("use T_motion_scaler!")
-        # scalerfile = './T_motion_scaler.sav'
-        # pickle.dump(self.train_motion_scaler, open(scalerfile, 'wb'))
-        # scalerfile = './T_music_scaler.sav'
-        # pickle.dump(self.train_acoustic_scaler, open(scalerfile, 'wb'))
-        # scalerfile = './T_temporal_scaler.sav'
-        # pickle.dump(self.train_temporal_scaler, open(scalerfile, 'wb'))
+
         self.train_dataset = train_dataset
 
     def load_test_data(self, test_file,start):
-        # scalerfile = './R_motion_scaler.sav'
-        # self.train_motion_scaler = pickle.load(open(scalerfile, 'rb'))
-        # scalerfile = './R_music_scaler.sav'
-        # self.train_acoustic_scaler = pickle.load(open(scalerfile, 'rb'))
-        # scalerfile = './R_temporal_scaler.sav'
-        # self.train_temporal_scaler = pickle.load(open(scalerfile, 'rb'))
+
 
         test_acoustic_features, test_temporal_indexes, test_motion_features,center = self.load_features_from_dir(test_file,over_write=True)
         test_motion_features = test_motion_features[:, :self.motion_dim]

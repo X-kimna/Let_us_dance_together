@@ -15,7 +15,7 @@ def smooth(a, WSZ):
 
 
 def smooth_skeleton(motion):
-    WSZ = 7
+    WSZ = 3
     skeletons_num = motion.shape[1]
     skeletons = np.hsplit(motion, skeletons_num)
     cur_skeleton = np.reshape(skeletons[0], (-1, 3))
@@ -63,7 +63,7 @@ def smooth_skeleton(motion):
     return smooth_result
 
 def getStandardFrames(frames):
-    new_frames = np.zeros([len(frames), 19, 3])
+    new_frames = np.zeros([len(frames), 21, 3])
     for i in range(len(frames)):
         # Hips
         new_frames[i][0][0] = frames[i][2][0] * -1
@@ -156,15 +156,29 @@ def getStandardFrames(frames):
         new_frames[i][18][0] = frames[i][15][0] * -1
         new_frames[i][18][1] = frames[i][15][1]
         new_frames[i][18][2] = frames[i][15][2]
+
+        # LeftToe
+        new_frames[i][19][0] = (frames[i][11][0] + frames[i][10][0]) / 2 * -1
+        new_frames[i][19][1] = (frames[i][11][1] + frames[i][10][1]) / 2
+        new_frames[i][19][2] = (frames[i][11][2] + frames[i][10][2]) / 2
+
+        # RightToe
+        new_frames[i][20][0] = (frames[i][20][0] + frames[i][19][0]) / 2 * -1
+        new_frames[i][20][1] = (frames[i][20][1] + frames[i][19][1]) / 2
+        new_frames[i][20][2] = (frames[i][20][2] + frames[i][19][2]) / 2
     return new_frames
 if __name__ == '__main__':
-    input_json_path='./test.json'
+    input_json_path='../../v3/result/DANCE_T_9.json'
     output_bvh_path='test.bvh'
 
     with open(input_json_path,'r') as fin:
         data = json.load(fin)
 
     frames=np.array(data['skeletons'])
-    frames=smooth_skeleton(getStandardFrames(frames))
+    frames=smooth_skeleton(frames)
+    data = {"length": data['length'], "skeletons": frames.tolist(), "center": data['center']}
+    with open('test.json', 'w') as file_object:
+        json.dump(data, file_object)
+    frames=getStandardFrames(frames)
     smartbody_skeleton = smartbody_skeleton.SmartBodySkeleton()
     smartbody_skeleton.poses2bvh(frames, output_file=output_bvh_path)

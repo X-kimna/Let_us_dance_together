@@ -216,34 +216,34 @@ class VAE_LSTM_FIX_model:
         #                              activation=None,
         #                              trainable=trainable)
         # ----------------------------------lstm 10-------------------------------------
-        with tf.variable_scope("lstm_10"):
-            concat10 = tf.concat([motion_predict, temporal_input], 2)
-            concat10 = tf.reshape(concat10, [-1, self.motion_dim + self.temporal_dim])
-            concat_rnn10 = tf.nn.bias_add(
-                tf.matmul(concat10,
-                          tf.Variable(tf.truncated_normal([self.motion_dim + self.temporal_dim, self.rnn_input_dim]))),
-                bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
-            concat_rnn10 = tf.reshape(concat_rnn10,
-                                      [-1, self.time_step, self.rnn_input_dim])
-            cell10 = tf.contrib.rnn.MultiRNNCell([attn_cell() for _ in range(3)])
-            init_state10 = cell10.zero_state(batch_size, dtype=tf.float32)
-            output_rnn10, final_states10 = tf.nn.dynamic_rnn(cell10,
-                                                             concat_rnn10,
-                                                             initial_state=init_state10,
-                                                             dtype=tf.float32)
-            output10 = tf.reshape(output_rnn10, [-1, self.rnn_unit_size])
-            pred10 = tf.nn.bias_add(
-                tf.matmul(output10, tf.Variable(tf.truncated_normal([self.rnn_unit_size, self.rnn_output_dim]))),
-                bias=tf.Variable(tf.zeros(shape=[self.rnn_output_dim])))
-
-            pred10 = tf.reshape(pred10, [-1, self.time_step, self.rnn_output_dim])
-
-        # ----------------------------------dense 11-------------------------------------
-        with tf.variable_scope("dense_11"):
-            motion_predict = tf.layers.dense(pred10,
-                                             self.motion_dim,
-                                             activation=None,
-                                             trainable=trainable)
+        # with tf.variable_scope("lstm_10"):
+        #     concat10 = tf.concat([motion_predict, temporal_input], 2)
+        #     concat10 = tf.reshape(concat10, [-1, self.motion_dim + self.temporal_dim])
+        #     concat_rnn10 = tf.nn.bias_add(
+        #         tf.matmul(concat10,
+        #                   tf.Variable(tf.truncated_normal([self.motion_dim + self.temporal_dim, self.rnn_input_dim]))),
+        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
+        #     concat_rnn10 = tf.reshape(concat_rnn10,
+        #                               [-1, self.time_step, self.rnn_input_dim])
+        #     cell10 = tf.contrib.rnn.MultiRNNCell([attn_cell() for _ in range(3)])
+        #     init_state10 = cell10.zero_state(batch_size, dtype=tf.float32)
+        #     output_rnn10, final_states10 = tf.nn.dynamic_rnn(cell10,
+        #                                                      concat_rnn10,
+        #                                                      initial_state=init_state10,
+        #                                                      dtype=tf.float32)
+        #     output10 = tf.reshape(output_rnn10, [-1, self.rnn_unit_size])
+        #     pred10 = tf.nn.bias_add(
+        #         tf.matmul(output10, tf.Variable(tf.truncated_normal([self.rnn_unit_size, self.rnn_output_dim]))),
+        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_output_dim])))
+        #
+        #     pred10 = tf.reshape(pred10, [-1, self.time_step, self.rnn_output_dim])
+        #
+        # # ----------------------------------dense 11-------------------------------------
+        # with tf.variable_scope("dense_11"):
+        #     motion_predict = tf.layers.dense(pred10,
+        #                                      self.motion_dim,
+        #                                      activation=None,
+        #                                      trainable=trainable)
 
         return motion_predict
 
@@ -330,7 +330,7 @@ class VAE_LSTM_FIX_model:
                     if step % 10 == 0:
                         print("epoch: %d step: %d, total loss: %.9f,motion_loss: %.9f, extr loss: %.9f,music_loss: %.9f,loss_motion_latent: %.9f, predict loss: %.9f " % (
                             i, step, loss_,motion_loss_, loss_e, loss_m,loss_ml,loss_p))
-                writer.add_summary(sum, i+691)
+                writer.add_summary(sum, i)
                 print("epoch: %d loss_avg: %f, " % (i, loss_avg / step))
                 if (i + 1) % 10 == 0:
                     print("保存模型：", saver.save(sess,os.path.join(self.model_save_dir,'stock2.model'), global_step=i))
@@ -440,6 +440,60 @@ class VAE_LSTM_FIX_model:
                 json.dump(data, file_object)
             print(loss, acc)
 
+    def smooth(self,a, WSZ):
+        out0 = np.convolve(a, np.ones(WSZ, dtype=int), 'valid') / WSZ
+        r = np.arange(1, WSZ - 1, 2)
+        start = np.cumsum(a[:WSZ - 1])[::2] / r
+        stop = (np.cumsum(a[:-WSZ:-1])[::2] / r)[::-1]
+        return np.concatenate((start, out0, stop))
+
+    def smooth_skeleton(self,motion):
+        WSZ = 3
+        skeletons_num = motion.shape[1]
+        skeletons = np.hsplit(motion, skeletons_num)
+        cur_skeleton = np.reshape(skeletons[0], (-1, 3))
+        # print(cur_skeleton.shape)
+        x_seq = np.split(cur_skeleton, 3, axis=1)[0]
+        x_seq = np.reshape(x_seq, -1)
+
+        y_seq = np.split(cur_skeleton, 3, axis=1)[1]
+        y_seq = np.reshape(y_seq, -1)
+
+        z_seq = np.split(cur_skeleton, 3, axis=1)[2]
+        z_seq = np.reshape(z_seq, -1)
+
+        x_smooth = self.smooth(x_seq, WSZ)
+        y_smooth = self.smooth(y_seq, WSZ)
+        z_smooth = self.smooth(z_seq, WSZ)
+        x_smooth = np.array(x_smooth)
+        smooth_result = np.column_stack((x_smooth, y_smooth, z_smooth))
+
+        for i in range(1, motion.shape[1]):
+            cur_skeleton = np.reshape(skeletons[i], (-1, 3))
+            # print(cur_skeleton.shape)
+            x_seq = np.split(cur_skeleton, 3, axis=1)[0]
+            x_seq = np.reshape(x_seq, -1)
+
+            y_seq = np.split(cur_skeleton, 3, axis=1)[1]
+            y_seq = np.reshape(y_seq, -1)
+
+            z_seq = np.split(cur_skeleton, 3, axis=1)[2]
+            z_seq = np.reshape(z_seq, -1)
+
+            x_smooth = self.smooth(x_seq, WSZ)
+            y_smooth = self.smooth(y_seq, WSZ)
+            z_smooth = self.smooth(z_seq, WSZ)
+            x_smooth = np.array(x_smooth)
+            # print(x_smooth.shape)
+            x = np.linspace(1, 5050, 5050)  # X轴数据
+            tmp = np.column_stack((x_smooth, y_smooth, z_smooth))
+            if i == 1:
+                smooth_result = np.stack((smooth_result, tmp), axis=1)
+            else:
+                tmp_ = tmp[:, np.newaxis, :]
+                smooth_result = np.concatenate((smooth_result, tmp_), axis=1)
+
+        return smooth_result
 
     def predict_from_music(self,acoustic_features, temporal_indexes,music_name,result_save_dir):
         acoustic = tf.placeholder(tf.float32, shape=[None, self.time_step, self.acoustic_dim])
@@ -523,6 +577,7 @@ class VAE_LSTM_FIX_model:
 
             test_predict = np.reshape(test_predict, [-1, self.motion_dim//3, 3])
             length = test_predict.shape[0]
+            test_predict=self.smooth_skeleton(test_predict)
             test_predict = test_predict.tolist()
             center=center
             data = {"length": length, "skeletons": test_predict,"center":center}

@@ -1,5 +1,5 @@
-from . import math3d_SmartBody
-from . import bvh_helper_SmartBody
+import math3d_SmartBody
+import bvh_helper_SmartBody
 
 import numpy as np
 

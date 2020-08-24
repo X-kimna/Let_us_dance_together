@@ -111,6 +111,62 @@ def getStandardFrames(frames):
         new_frames[i][20][1] = (frames[i][20][1] + frames[i][19][1]) / 2
         new_frames[i][20][2] = (frames[i][20][2] + frames[i][19][2]) / 2
     return new_frames
+
+def smooth(a, WSZ):
+    out0 = np.convolve(a, np.ones(WSZ, dtype=int), 'valid') / WSZ
+    r = np.arange(1, WSZ - 1, 2)
+    start = np.cumsum(a[:WSZ - 1])[::2] / r
+    stop = (np.cumsum(a[:-WSZ:-1])[::2] / r)[::-1]
+    return np.concatenate((start, out0, stop))
+
+
+def smooth_skeleton(motion):
+    WSZ = 3
+    skeletons_num = motion.shape[1]
+    skeletons = np.hsplit(motion, skeletons_num)
+    cur_skeleton = np.reshape(skeletons[0], (-1, 3))
+    # print(cur_skeleton.shape)
+    x_seq = np.split(cur_skeleton, 3, axis=1)[0]
+    x_seq = np.reshape(x_seq, -1)
+
+    y_seq = np.split(cur_skeleton, 3, axis=1)[1]
+    y_seq = np.reshape(y_seq, -1)
+
+    z_seq = np.split(cur_skeleton, 3, axis=1)[2]
+    z_seq = np.reshape(z_seq, -1)
+
+    x_smooth = smooth(x_seq, WSZ)
+    y_smooth = smooth(y_seq, WSZ)
+    z_smooth = smooth(z_seq, WSZ)
+    x_smooth = np.array(x_smooth)
+    smooth_result = np.column_stack((x_smooth, y_smooth, z_smooth))
+
+    for i in range(1, motion.shape[1]):
+        cur_skeleton = np.reshape(skeletons[i], (-1, 3))
+        # print(cur_skeleton.shape)
+        x_seq = np.split(cur_skeleton, 3, axis=1)[0]
+        x_seq = np.reshape(x_seq, -1)
+
+        y_seq = np.split(cur_skeleton, 3, axis=1)[1]
+        y_seq = np.reshape(y_seq, -1)
+
+        z_seq = np.split(cur_skeleton, 3, axis=1)[2]
+        z_seq = np.reshape(z_seq, -1)
+
+        x_smooth = smooth(x_seq, WSZ)
+        y_smooth = smooth(y_seq, WSZ)
+        z_smooth = smooth(z_seq, WSZ)
+        x_smooth = np.array(x_smooth)
+        # print(x_smooth.shape)
+        x = np.linspace(1, 5050, 5050)  # X轴数据
+        tmp = np.column_stack((x_smooth, y_smooth, z_smooth))
+        if i == 1:
+            smooth_result = np.stack((smooth_result, tmp), axis=1)
+        else:
+            tmp_ = tmp[:, np.newaxis, :]
+            smooth_result = np.concatenate((smooth_result, tmp_), axis=1)
+
+    return smooth_result
 hop_length = 512
 window_length = hop_length * 2
 fps = 25
@@ -118,8 +174,8 @@ spf = 0.04  # 40 ms
 sample_rate = 44100  #
 resample_rate = hop_length * fps
 
-music_dir= '../music/W'
-music_name='风流寡妇圆舞曲'
+music_dir= '../music/T'
+music_name='Libertango'
 music_path=os.path.join(music_dir,music_name+'.mp3')
 duration =librosa.get_duration(filename=music_path)
 
@@ -132,29 +188,30 @@ np.save(acoustic_features_path, acoustic_features)
 np.save(temporal_indexes_path, temporal_indexes)
 
 
+
 train_dirs = []
-with open('train_dirs.txt', 'r')as f:
+with open('./train_dirs.txt', 'r')as f:
     for line in f.readlines():
         train_dirs.append(line[:-1])
 
 Model = VAE_LSTM_FIX_model(
         train_file_list=train_dirs,
-        model_save_dir='./good_result/W/model',
-        log_dir='./good_result/W/train_nn_log',
-        motion_vae_ckpt_dir='./good_result/W/motion_vae_model/stock2.model-349',
-        music_vae_ckpt_dir='./good_result/W/music_vae_model/stock2.model-269',
-        rnn_unit_size=32,
+        model_save_dir='./good_result/T/model',
+        log_dir='./good_result/T/train_nn_log',
+        motion_vae_ckpt_dir='./good_result/T/motion_vae_model/stock2.model-879',
+        music_vae_ckpt_dir='./good_result/T/music_vae_model/stock2.model-599',
+        rnn_unit_size=64,
         acoustic_dim=16,
         temporal_dim=3,
         motion_dim=63,
         time_step=120,
         batch_size=10,
-        learning_rate=1e-3,
-        extr_loss_threshold=0.045,
+        learning_rate=1e-4,
+        extr_loss_threshold=6e-4,
         overlap=True,
-        epoch_size=1500,
+        epoch_size=1000,
         use_mask=True)
-result_save_dir= '../result/W'
+result_save_dir= '../result/T'
 Model.predict_from_music(acoustic_features, temporal_indexes,music_name,result_save_dir=result_save_dir)
 motion_path=os.path.join(result_save_dir,music_name+'.json')
 
