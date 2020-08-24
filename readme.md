@@ -112,6 +112,10 @@ vae单独训练，motion_vae和music_vae参数提前训练好，并且在网络�
 - 使用minmax进行归一化
 - 使用MSEloss
 
+对vae进行了改进：加入了smooth less loss
+
+对vae+lstm模型进行了改进：去掉了一个lstm和一个dense层，加入了dropout（因为出现了过拟合）
+
 ### v4
 
 vae和lstm一起训练。
