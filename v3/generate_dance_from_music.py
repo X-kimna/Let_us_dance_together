@@ -174,8 +174,8 @@ spf = 0.04  # 40 ms
 sample_rate = 44100  #
 resample_rate = hop_length * fps
 
-music_dir= '../music/T'
-music_name='Libertango'
+music_dir= '../music/W'
+music_name='Danube Waves'
 music_path=os.path.join(music_dir,music_name+'.mp3')
 duration =librosa.get_duration(filename=music_path)
 
@@ -195,23 +195,23 @@ with open('./train_dirs.txt', 'r')as f:
         train_dirs.append(line[:-1])
 
 Model = VAE_LSTM_FIX_model(
-        train_file_list=train_dirs,
-        model_save_dir='./good_result/T/model',
-        log_dir='./good_result/T/train_nn_log',
-        motion_vae_ckpt_dir='./good_result/T/motion_vae_model/stock2.model-879',
-        music_vae_ckpt_dir='./good_result/T/music_vae_model/stock2.model-599',
-        rnn_unit_size=64,
-        acoustic_dim=16,
-        temporal_dim=3,
-        motion_dim=63,
-        time_step=120,
-        batch_size=10,
-        learning_rate=1e-4,
-        extr_loss_threshold=6e-4,
-        overlap=True,
-        epoch_size=1000,
-        use_mask=True)
-result_save_dir= '../result/T'
+    train_file_list=train_dirs,
+    model_save_dir='./good_result/W/model',
+    log_dir='./good_result/W/train_nn_log',
+    motion_vae_ckpt_dir='./good_result/W/motion_vae_model/stock2.model-999',
+    music_vae_ckpt_dir='./good_result/W/music_vae_model/stock2.model-769',
+    rnn_unit_size=64,
+    acoustic_dim=16,
+    temporal_dim=3,
+    motion_dim=63,
+    time_step=120,
+    batch_size=10,
+    learning_rate=1e-4,
+    extr_loss_threshold=6e-4,
+    overlap=True,
+    epoch_size=1000,
+    use_mask=True)
+result_save_dir= '../result/W'
 Model.predict_from_music(acoustic_features, temporal_indexes,music_name,result_save_dir=result_save_dir)
 motion_path=os.path.join(result_save_dir,music_name+'.json')
 

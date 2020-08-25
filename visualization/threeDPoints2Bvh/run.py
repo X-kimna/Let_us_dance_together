@@ -168,7 +168,7 @@ def getStandardFrames(frames):
         new_frames[i][20][2] = (frames[i][20][2] + frames[i][19][2]) / 2
     return new_frames
 if __name__ == '__main__':
-    input_json_path='../../v3/result/DANCE_T_9.json'
+    input_json_path='../../v3/result/DANCE_W_3.json'
     output_bvh_path='test.bvh'
 
     with open(input_json_path,'r') as fin:

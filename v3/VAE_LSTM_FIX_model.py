@@ -330,7 +330,7 @@ class VAE_LSTM_FIX_model:
                     if step % 10 == 0:
                         print("epoch: %d step: %d, total loss: %.9f,motion_loss: %.9f, extr loss: %.9f,music_loss: %.9f,loss_motion_latent: %.9f, predict loss: %.9f " % (
                             i, step, loss_,motion_loss_, loss_e, loss_m,loss_ml,loss_p))
-                writer.add_summary(sum, i)
+                writer.add_summary(sum, i+243)
                 print("epoch: %d loss_avg: %f, " % (i, loss_avg / step))
                 if (i + 1) % 10 == 0:
                     print("保存模型：", saver.save(sess,os.path.join(self.model_save_dir,'stock2.model'), global_step=i))
