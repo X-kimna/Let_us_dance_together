@@ -158,41 +158,6 @@ class VAE_LSTM_FIX_model:
         motion_predict=self.motionVae.motion_decoder(motion_latent,  self.n_hidden, self.motion_dim)
         motion_predict = tf.clip_by_value(motion_predict, 1e-8, 1 - 1e-8)
         motion_predict=tf.reshape(motion_predict,[-1,self.time_step,self.motion_dim])
-        # ----------------------------------dense 5-------------------------------------
-        # with tf.variable_scope("dense_6"):
-        #     motion_predict = tf.layers.dense(motion_predict,
-        #                              self.motion_dim,
-        #                              activation=None,
-        #                              trainable=trainable)
-        # # ----------------------------------lstm 10-------------------------------------
-        # with tf.variable_scope("lstm_10"):
-        #     concat10 = tf.concat([motion_predict, temporal_input], 2)
-        #     concat10 = tf.reshape(concat10, [-1, self.motion_dim + self.temporal_dim])
-        #     concat_rnn10 = tf.nn.bias_add(
-        #         tf.matmul(concat10,
-        #                   tf.Variable(tf.truncated_normal([self.motion_dim + self.temporal_dim, self.rnn_input_dim]))),
-        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
-        #     concat_rnn10 = tf.reshape(concat_rnn10,
-        #                               [-1, self.time_step, self.rnn_input_dim])
-        #     cell10 = tf.contrib.rnn.MultiRNNCell([attn_cell() for _ in range(3)])
-        #     init_state10 = cell10.zero_state(batch_size, dtype=tf.float32)
-        #     output_rnn10, final_states10 = tf.nn.dynamic_rnn(cell10,
-        #                                                      concat_rnn10,
-        #                                                      initial_state=init_state10,
-        #                                                      dtype=tf.float32)
-        #     output10 = tf.reshape(output_rnn10, [-1, self.rnn_unit_size])
-        #     pred10 = tf.nn.bias_add(
-        #         tf.matmul(output10, tf.Variable(tf.truncated_normal([self.rnn_unit_size, self.rnn_output_dim]))),
-        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_output_dim])))
-        #
-        #     pred10 = tf.reshape(pred10, [-1, self.time_step, self.rnn_output_dim])
-        #
-        # # ----------------------------------dense 11-------------------------------------
-        # with tf.variable_scope("dense_11"):
-        #     motion_predict = tf.layers.dense(pred10,
-        #                                                 self.motion_dim,
-        #                                                 activation=None,
-        #                                                 trainable=trainable)
 
 
         return motion_predict,loss_motion_latent
@@ -209,41 +174,6 @@ class VAE_LSTM_FIX_model:
         motion_predict = self.motionVae.motion_decoder(motion_latent, self.n_hidden, self.motion_dim)
         motion_predict = tf.clip_by_value(motion_predict, 1e-8, 1 - 1e-8)
         motion_predict = tf.reshape(motion_predict, [-1, self.time_step, self.motion_dim])
-        # ----------------------------------dense 5-------------------------------------
-        # with tf.variable_scope("dense_6"):
-        #     motion_predict = tf.layers.dense(motion_predict,
-        #                              self.motion_dim,
-        #                              activation=None,
-        #                              trainable=trainable)
-        # ----------------------------------lstm 10-------------------------------------
-        # with tf.variable_scope("lstm_10"):
-        #     concat10 = tf.concat([motion_predict, temporal_input], 2)
-        #     concat10 = tf.reshape(concat10, [-1, self.motion_dim + self.temporal_dim])
-        #     concat_rnn10 = tf.nn.bias_add(
-        #         tf.matmul(concat10,
-        #                   tf.Variable(tf.truncated_normal([self.motion_dim + self.temporal_dim, self.rnn_input_dim]))),
-        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_input_dim])))
-        #     concat_rnn10 = tf.reshape(concat_rnn10,
-        #                               [-1, self.time_step, self.rnn_input_dim])
-        #     cell10 = tf.contrib.rnn.MultiRNNCell([attn_cell() for _ in range(3)])
-        #     init_state10 = cell10.zero_state(batch_size, dtype=tf.float32)
-        #     output_rnn10, final_states10 = tf.nn.dynamic_rnn(cell10,
-        #                                                      concat_rnn10,
-        #                                                      initial_state=init_state10,
-        #                                                      dtype=tf.float32)
-        #     output10 = tf.reshape(output_rnn10, [-1, self.rnn_unit_size])
-        #     pred10 = tf.nn.bias_add(
-        #         tf.matmul(output10, tf.Variable(tf.truncated_normal([self.rnn_unit_size, self.rnn_output_dim]))),
-        #         bias=tf.Variable(tf.zeros(shape=[self.rnn_output_dim])))
-        #
-        #     pred10 = tf.reshape(pred10, [-1, self.time_step, self.rnn_output_dim])
-        #
-        # # ----------------------------------dense 11-------------------------------------
-        # with tf.variable_scope("dense_11"):
-        #     motion_predict = tf.layers.dense(pred10,
-        #                                      self.motion_dim,
-        #                                      activation=None,
-        #                                      trainable=trainable)
 
         return motion_predict
 
