@@ -38,7 +38,7 @@ for **v1,v2,v4**, you can run the following `.py` files for training
 
 `./v4/train.py`
 
-for **v4**,  you must run the `./v3/train_motion_vae.py` and `./v3/train_music_vae.py` to get the pretrained VAE, then  run the `./v3/train.py` .
+for **v3**,  you must run the `./v3/train_motion_vae.py` and `./v3/train_music_vae.py` to get the pretrained VAE, then  run the `./v3/train.py` .
 
 For the details of the network, please modify the model by yourself (e.g., the number of epoches, learning_rate, the model save dir)
 
@@ -49,6 +49,8 @@ for **v1,v2,v3,v4**, you can run the following `.py` files for testing
 `./v1/test.py`
 
 `./v2/test.py`
+
+`./v3/test.py`
 
 `./v4/test.py`
 
