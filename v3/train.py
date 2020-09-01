@@ -10,10 +10,10 @@ if __name__=='__main__':
     print(train_dirs)
     Model=VAE_LSTM_FIX_model(
                  train_file_list=train_dirs,
-                 model_save_dir='./good_result/R/model',
-                 log_dir='./good_result/R/train_nn_log',
-                 motion_vae_ckpt_dir='./good_result/R/motion_vae_model/stock2.model-999',
-                 music_vae_ckpt_dir='./good_result/R/music_vae_model/stock2.model-669',
+                 model_save_dir='./good_result/full/model',
+                 log_dir='./good_result/full/train_nn_log',
+                 motion_vae_ckpt_dir='./good_result/full/motion_vae_model/stock2.model-469',
+                 music_vae_ckpt_dir='./good_result/full/music_vae_model/stock2.model-559',
                  rnn_unit_size=64,
                  acoustic_dim=16,
                  temporal_dim=3,
