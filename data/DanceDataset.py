@@ -1,4 +1,4 @@
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler
 import sys
 
 sys.path.append('..')
@@ -23,7 +23,8 @@ class DanceDataset:
                  time_step=120,
                  overlap=True,
                  overlap_interval=10,
-                 batch_size=10
+                 batch_size=10,
+                 normalize_mode='minmax'
                  ):
         print("\n...loading training data...\n")
         self.train_file_list = train_file_list
@@ -34,7 +35,9 @@ class DanceDataset:
         self.time_step = time_step
         self.overlap_interval = overlap_interval
         self.batch_size=batch_size
+        self.normalize_mode=normalize_mode
         self.load_train_data_and_scaler()
+
 
     def load_features_from_dir(self, data_dir,over_write=False):
         # load data from data_dir
@@ -52,9 +55,16 @@ class DanceDataset:
         train_temporal_features = np.empty([0, self.temporal_dim])
         train_motion_features = np.empty([0, self.motion_dim])
 
-        self.train_acoustic_scaler = MinMaxScaler()
-        self.train_motion_scaler = MinMaxScaler()
-        self.train_temporal_scaler = MinMaxScaler()
+        if self.normalize_mode=='minmax':
+            self.train_acoustic_scaler = MinMaxScaler()
+            self.train_motion_scaler = MinMaxScaler()
+            self.train_temporal_scaler = MinMaxScaler()
+        elif self.normalize_mode=='standard':
+            self.train_acoustic_scaler = StandardScaler()
+            self.train_motion_scaler = StandardScaler()
+            self.train_temporal_scaler = StandardScaler()
+        else:
+            raise Exception("Invalid normalize mode!")
 
         for file_dir in self.train_file_list:
             acoustic_features, temporal_indexes, motion_features,_ = self.load_features_from_dir(file_dir)
