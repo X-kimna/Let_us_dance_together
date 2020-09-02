@@ -2,15 +2,16 @@ from AE_LSTM_model import AE_LSTM_model
 
 if __name__ == '__main__':
     train_dirs = []
-    with open('./train_dirs.txt', 'r')as f:
+    with open('../data/R_train_dirs.txt', 'r')as f:
         for line in f.readlines():
             train_dirs.append(line[:-1])
     test_dirs=[
-        "../../../Music-to-Dance-Motion-Synthesis/DANCE_R_10"
+        "../data/DANCE_R_10"
     ]
     Model = AE_LSTM_model(
         train_file_list=train_dirs,
         model_save_dir='./model',
+        model_load_dir='./model',
         log_dir='./train_nn_log',
         rnn_input_dim=32,
         rnn_unit_size=32,
@@ -27,7 +28,7 @@ if __name__ == '__main__':
 
         dense_dim=24,
         lstm_output_dim=32,
-        reduced_size=10, )
+        reduced_size=10)
 
     for test_file in test_dirs:
         Model.predict(test_file,'./result')

@@ -2,15 +2,16 @@ from VAE_LSTM_model import VAE_LSTM_model
 
 if __name__ == '__main__':
     train_dirs = []
-    with open('./train_dirs.txt', 'r')as f:
+    with open('../data/R_train_dirs.txt', 'r')as f:
         for line in f.readlines():
             train_dirs.append(line[:-1])
-    test_dirs=[
-        "../../../Music-to-Dance-Motion-Synthesis/DANCE_R_10"
+    test_dirs = [
+        "../data/DANCE_R_10"
     ]
     Model = VAE_LSTM_model(
         train_file_list=train_dirs,
         model_save_dir='./model',
+        model_load_dir='./model',
         log_dir='./train_nn_log',
         rnn_unit_size=32,
         acoustic_dim=16,

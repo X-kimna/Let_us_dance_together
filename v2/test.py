@@ -2,18 +2,19 @@ from VAE_LSTM_FIX_model import VAE_LSTM_FIX_model
 
 if __name__ == '__main__':
     train_dirs = []
-    with open('./train_dirs.txt', 'r')as f:
+    with open('../data/R_train_dirs.txt', 'r')as f:
         for line in f.readlines():
             train_dirs.append(line[:-1])
     test_dirs=[
-        "../../../Music-to-Dance-Motion-Synthesis/DANCE_W_3"
+        "../data/DANCE_R_10"
     ]
     Model = VAE_LSTM_FIX_model(
         train_file_list=train_dirs,
         model_save_dir='./good_result/W/model',
-        log_dir='./good_result/W/train_nn_log',
-        motion_vae_ckpt_dir='./good_result/W/motion_vae_model/stock2.model-999',
-        music_vae_ckpt_dir='./good_result/W/music_vae_model/stock2.model-769',
+        model_load_dir='./good_result/W/model',
+        log_dir='./train_nn_log',
+        motion_vae_ckpt_dir='./model/C/motion_vae_model/stock2.model-999',
+        music_vae_ckpt_dir='./model/C/music_vae_model/stock2.model-999',
         rnn_unit_size=64,
         acoustic_dim=16,
         temporal_dim=3,

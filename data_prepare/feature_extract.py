@@ -197,36 +197,4 @@ def motion_feature_extract(data_dir, with_rotate, with_centering):
 
     pass
 
-# if __name__ == '__main__':
-#     All_dirs = os.listdir(data_dir)
-#     C_dirs = []
-#     R_dirs = []
-#     T_dirs = []
-#     W_dirs = []
-#     for one in All_dirs:
-#         if one.split('_')[1] == 'C':
-#             C_dirs.append(one)
-#             pass
-#         elif one.split('_')[1] == 'R':
-#             R_dirs.append(one)
-#             pass
-#         elif one.split('_')[1] == 'T':
-#             T_dirs.append(one)
-#             pass
-#         elif one.split('_')[1] == 'W':
-#             W_dirs.append(one)
-#             pass
-#
-#     for one in C_dirs:
-#         one_dir = os.path.join(data_dir, one)
-#         motion_features = motion_feature_extract(one_dir)
-#         acoustic_features = audio_feature_extract(one_dir).transpose()  # dim 16 [n_features, n_samples]
-#
-#         scaler = StandardScaler()
-#         scaler.fit(X=acoustic_features)
-#         trans_data = scaler.transform(acoustic_features)
-#         #print(acoustic_features.shape)
-#
-#
-#     pass
 

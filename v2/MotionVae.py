@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import os
 import json
-from DanceDataset import DanceDataset
+import sys
+sys.path.append("..")
+from data.DanceDataset import DanceDataset
 
 
 class MotionVae:
@@ -24,7 +26,7 @@ class MotionVae:
 
         self.model_save_dir=model_save_dir
         self.log_dir=log_dir
-    def init_dataset(self):
+    def init_dataset(self,normalize_mode):
         self.train_dataset = DanceDataset(train_file_list=self.train_file_list,
                                           acoustic_dim=16,
                                           temporal_dim=3,
@@ -32,7 +34,8 @@ class MotionVae:
                                           time_step=self.time_step,
                                           overlap=True,
                                           overlap_interval=10,
-                                          batch_size=self.batch_size)
+                                          batch_size=self.batch_size,
+                                          normalize_mode=normalize_mode)
 
     def motion_encoder(self ,input_motion, n_hidden,n_output):
     # input ?*16  n_hidden 500 keep_prob 1 n_output 20

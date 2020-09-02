@@ -13,8 +13,6 @@ parser.add_argument('-t', '--train_dirs', default='../data/R_train_dirs.txt', ty
 parser.add_argument('-m', '--model_save_dir', default='./model', type=str, help='model save dir')
 parser.add_argument('-l', '--log_dir',default='./train_nn_log', type=str, help='log save dir')
 parser.add_argument('--normalize_mode',default='minmax', type=str, help='normalize mode')
-parser.add_argument('--motion_vae_ckpt_dir',default='./model/C/motion_vae_model/stock2.model-999', type=str, help='motion vae model dir')
-parser.add_argument('--music_vae_ckpt_dir',default='./model/C/music_vae_model/stock2.model-999', type=str, help='music vae model dir')
 parser.add_argument('--model_load_dir',default='./model', type=str, help='model load dir')
 
 parser.add_argument('--rnn_unit_size', default=32, type=int, help='rnn unit size')

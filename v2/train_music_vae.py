@@ -1,13 +1,14 @@
 from MusicVae import  MusicVae
-
+from options.music_vae_options import parser
 if __name__=="__main__":
+    args = parser.parse_args()
     train_dirs = []
-    with open('./train_dirs.txt', 'r')as f:
+    with open(args.train_dirs, 'r')as f:
         for line in f.readlines():
             train_dirs.append(line[:-1])
 
-    Model = MusicVae(model_save_dir='./good_result/full/music_vae_model',
-                 log_dir='./good_result/full/music_log',
+    Model = MusicVae(model_save_dir=args.model_save_dir,
+                 log_dir=args.log_dir,
                  train_file_list=train_dirs)
-    Model.init_dataset()
-    Model.train(resume=False)
+    Model.init_dataset(normalize_mode=args.normalize_mode)
+    Model.train(resume=args.resume)

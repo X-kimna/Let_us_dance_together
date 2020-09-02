@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import os
 import json
-from DanceDataset import DanceDataset
+import sys
+sys.path.append("..")
+from data.DanceDataset import DanceDataset
 from MotionVae import MotionVae
 from MusicVae import MusicVae
 from tensorflow.python import pywrap_tensorflow
@@ -10,6 +12,7 @@ class VAE_LSTM_FIX_model:
     def __init__(self,
                  train_file_list,
                  model_save_dir,
+                 model_load_dir,
                  log_dir,
                  motion_vae_ckpt_dir,
                  music_vae_ckpt_dir,
@@ -24,9 +27,11 @@ class VAE_LSTM_FIX_model:
                  overlap=True,
                  epoch_size=1500,
                  use_mask=True,
+                 normalize_mode='minmax'
                  ):
         # lstm
         self.model_save_dir=model_save_dir
+        self.model_load_dir=model_load_dir
         self.log_dir=log_dir
         self.motion_vae_ckpt_dir=motion_vae_ckpt_dir
         self.music_vae_ckpt_dir=music_vae_ckpt_dir
@@ -58,7 +63,8 @@ class VAE_LSTM_FIX_model:
                                           time_step=self.time_step,
                                           overlap=self.overlap,
                                           overlap_interval=10,
-                                          batch_size=self.batch_size)
+                                          batch_size=self.batch_size,
+                                          normalize_mode=normalize_mode)
 
 
         self.musicVae=MusicVae()
@@ -229,9 +235,9 @@ class VAE_LSTM_FIX_model:
                     sess.run(_op)    
             
             if resume:
-                ckpt = tf.train.get_checkpoint_state(self.model_save_dir)
+                ckpt = tf.train.get_checkpoint_state(self.model_load_dir)
                 if ckpt and ckpt.model_checkpoint_path:
-                    print("restore weight from %s ..."%self.model_save_dir)
+                    print("restore weight from %s ..."%self.model_load_dir)
                     saver.restore(sess, ckpt.model_checkpoint_path)
             writer = tf.summary.FileWriter(self.log_dir, sess.graph)
             writer.add_graph(sess.graph)
@@ -301,7 +307,7 @@ class VAE_LSTM_FIX_model:
                     weights = reader.get_tensor('music_autoencoder/' + vv.name[:-2])
                     _op = tf.assign(vv, weights)
                     sess.run(_op)
-            module_file = tf.train.latest_checkpoint(self.model_save_dir)
+            module_file = tf.train.latest_checkpoint(self.model_load_dir)
             saver.restore(sess, module_file)
             file_name = os.path.basename(test_file) + '.json'
             print("test the file %s" % file_name)
@@ -458,7 +464,7 @@ class VAE_LSTM_FIX_model:
                     weights = reader.get_tensor('music_autoencoder/' + vv.name[:-2])
                     _op = tf.assign(vv, weights)
                     sess.run(_op)
-            module_file = tf.train.latest_checkpoint(self.model_save_dir)
+            module_file = tf.train.latest_checkpoint(self.model_load_dir)
             saver.restore(sess, module_file)
             file_name = os.path.basename(music_name) + '.json'
             print("test the file %s" % file_name)

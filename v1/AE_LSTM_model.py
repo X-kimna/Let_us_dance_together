@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import os
 import json
-from DanceDataset import DanceDataset
+import sys
+sys.path.append("..")
+from data.DanceDataset import DanceDataset
 
 
 class AE_LSTM_model:
@@ -10,6 +12,7 @@ class AE_LSTM_model:
                  train_file_list,
                  model_save_dir,
                  log_dir,
+                 model_load_dir,
                  rnn_input_dim=32,
                  rnn_unit_size=32,
                  acoustic_dim=16,
@@ -22,7 +25,7 @@ class AE_LSTM_model:
                  overlap=True,
                  epoch_size=1500,
                  use_mask=True,
-
+                 normalize_mode='minmax',
                  dense_dim=24,
                  lstm_output_dim=32,
                  reduced_size=10,
@@ -30,6 +33,7 @@ class AE_LSTM_model:
 
                  ):
         self.model_save_dir=model_save_dir
+        self.model_load_dir=model_load_dir
         self.log_dir=log_dir
         self.rnn_input_dim = rnn_input_dim
         self.rnn_unit_size = rnn_unit_size
@@ -52,7 +56,8 @@ class AE_LSTM_model:
                                           time_step=self.time_step,
                                           overlap=self.overlap,
                                           overlap_interval=10,
-                                          batch_size=self.batch_size)
+                                          batch_size=self.batch_size,
+                                          normalize_mode=normalize_mode)
 
         self.dense_dim = dense_dim
         self.lstm_output_dim=lstm_output_dim
@@ -221,9 +226,9 @@ class AE_LSTM_model:
 
             sess.run(tf.global_variables_initializer())
             if resume:
-                ckpt = tf.train.get_checkpoint_state(self.model_save_dir)
+                ckpt = tf.train.get_checkpoint_state(self.model_load_dir)
                 if ckpt and ckpt.model_checkpoint_path:
-                    print("restore weight from %s ..."%self.model_save_dir)
+                    print("restore weight from %s ..."%self.model_load_dir)
                     saver.restore(sess, ckpt.model_checkpoint_path)
             writer = tf.summary.FileWriter(self.log_dir, sess.graph)
             writer.add_graph(sess.graph)
@@ -280,7 +285,7 @@ class AE_LSTM_model:
 
 
         with tf.Session() as sess:
-            module_file = tf.train.latest_checkpoint(self.model_save_dir)
+            module_file = tf.train.latest_checkpoint(self.model_load_dir)
             saver.restore(sess, module_file)
             file_name = os.path.basename(test_file) + '.json'
             print("test the file %s" % file_name)

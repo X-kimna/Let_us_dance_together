@@ -26,21 +26,84 @@ You can download the dataset from:
 
 https://github.com/mhy12345/Music-to-Dance-Motion-Synthesis
 
+## Details
+
+We provide three version training mode:
+
+1. v1: LSTM & autoencoder
+2. v2:  LSTM & fixed VAE model  (only training lstm, the vae is pretrained)
+3. v3:  LSTM & VAE model (training together)
+
 ## Train
 
-First of all, please modify the `train_dirs.txt` to prepare the train dataset.
+#### V1
 
-for **v1,v2,v4**, you can run the following `.py` files for training 
+```
+cd v1
+python train.py
+```
 
-`./v1/train.py`
+You can change the training details by your self,  (see the `./options/AE_options.py`) , for example:
 
-`./v2/train.py`
+```
+cd v1
+python train.py --train_dirs=../data/T_train_dirs.txt --learning_rate=1e-4 --epoch_size=500 --normalize_mode=standard
+```
 
-`./v4/train.py`
+#### V2
 
-for **v3**,  you must run the `./v3/train_motion_vae.py` and `./v3/train_music_vae.py` to get the pretrained VAE, then  run the `./v3/train.py` .
+You can train motionVAE and musicVAE by yourself:
 
-For the details of the network, please modify the model by yourself (e.g., the number of epoches, learning_rate, the model save dir)
+```
+cd v2
+python train_motion_vae.py
+python train_music_vae.py
+```
+
+
+
+We also provide pretrained VAE model :
+
+**baiduYun**
+
+链接：https://pan.baidu.com/s/1VxklDyWodBikT-DM9W-pFQ 
+提取码：pbso
+
+Download the files in `VAE` and put them at `v2/model`
+
+
+
+then :
+
+```
+cd v2
+python train.py
+```
+
+You can also change the training details by your self,  (see the `./options/AE_options.py`) , for example:
+
+```
+cd v2
+python train.py --train_dirs=../data/T_train_dirs.txt --learning_rate=1e-4 --motion_vae_ckpt_dir='./model/W/motion_vae_model/stock2.model-999'
+```
+
+please carefully set  --motion_vae_ckpt_dir='./motion_vae_model/stock2.model-**xxx**'  and  --motion_vae_ckpt_dir='./music_vae_model/stock2.model-**xxx**'
+
+#### V3
+
+```
+cd v3
+python train.py
+```
+
+
+
+You can also change the training details by your self,  (see the `./options/AE_options.py`) , for example:
+
+```
+cd v3
+python train.py --train_dirs=../data/T_train_dirs.txt --learning_rate=1e-4 --epoch_size=500 --normalize_mode=standard
+```
 
 ## Test
 

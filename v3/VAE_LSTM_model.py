@@ -2,7 +2,9 @@ import tensorflow as tf
 import numpy as np
 import os
 import json
-from DanceDataset import DanceDataset
+import sys
+sys.path.append("..")
+from data.DanceDataset import DanceDataset
 from MotionVae import MotionVae
 from MusicVae import MusicVae
 from tensorflow.python import pywrap_tensorflow
@@ -12,6 +14,7 @@ class VAE_LSTM_model:
     def __init__(self,
                  train_file_list,
                  model_save_dir,
+                 model_load_dir,
                  log_dir,
                  rnn_unit_size=32,
                  acoustic_dim=16,
@@ -24,9 +27,11 @@ class VAE_LSTM_model:
                  overlap=True,
                  epoch_size=1500,
                  use_mask=True,
+                 normalize_mode='minmax'
                  ):
         # lstm
         self.model_save_dir = model_save_dir
+        self.model_load_dir=model_load_dir
         self.log_dir = log_dir
         self.dense_dim = 8
         self.lstm1_input_dim = 16
@@ -58,7 +63,8 @@ class VAE_LSTM_model:
                                           time_step=self.time_step,
                                           overlap=self.overlap,
                                           overlap_interval=10,
-                                          batch_size=self.batch_size)
+                                          batch_size=self.batch_size,
+                                          normalize_mode=normalize_mode)
 
         self.dense1_dim = 8
 
@@ -238,9 +244,9 @@ class VAE_LSTM_model:
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             if resume:
-                ckpt = tf.train.get_checkpoint_state(self.model_save_dir)
+                ckpt = tf.train.get_checkpoint_state(self.model_load_dir)
                 if ckpt and ckpt.model_checkpoint_path:
-                    print("restore weight from %s ..." % self.model_save_dir)
+                    print("restore weight from %s ..." % self.model_load_dir)
                     saver.restore(sess, ckpt.model_checkpoint_path)
             writer = tf.summary.FileWriter(self.log_dir, sess.graph)
             writer.add_graph(sess.graph)
@@ -284,7 +290,7 @@ class VAE_LSTM_model:
         temporal = tf.placeholder(tf.float32, shape=[None, self.time_step, self.temporal_dim])
         motion = tf.placeholder(tf.float32, shape=[None, self.time_step, self.motion_dim])
         mask = tf.placeholder(tf.float32, shape=[None, self.time_step, 1])
-        test_dataset, train_motion_scaler, test_size, center = self.train_dataset.load_test_data(test_file)
+        test_dataset, train_motion_scaler, test_size, center = self.train_dataset.load_test_data(test_file,start=0)
 
         motion_latent, decoded_acoustic_features = self.acoustic_features_extractor(acoustic, acoustic, temporal, mask,
                                                                                     trainable=True)
@@ -295,7 +301,7 @@ class VAE_LSTM_model:
         saver = tf.train.Saver(tf.global_variables())
 
         with tf.Session() as sess:
-            module_file = tf.train.latest_checkpoint(self.model_save_dir)
+            module_file = tf.train.latest_checkpoint(self.model_load_dir)
             saver.restore(sess, module_file)
             file_name = os.path.basename(test_file) + '.json'
             print("test the file %s" % file_name)

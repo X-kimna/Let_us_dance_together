@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-data_path='./v3/result/'
+data_path= 'v2/result/'
 dirs = os.listdir(data_path)
 for file in dirs:
     with open(data_path+file, 'r') as fin:
@@ -14,5 +14,5 @@ for file in dirs:
                 data_motion[i][j]=(data_motion[i][j]+data_motion[i+1][j])/2
 
     data = {"length": data['length'], "skeletons": data_motion.tolist(),"center":center}
-    with open('./v3/interpolation_result/'+file, 'w') as file_object:
+    with open('./v2/interpolation_result/'+file, 'w') as file_object:
         json.dump(data, file_object)

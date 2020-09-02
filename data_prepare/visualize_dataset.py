@@ -40,7 +40,7 @@ model_name = 'LSTM-VAE_rotate_Ortho_Leaky_Temporal_InputSize_50_Seq_120_TempoNor
 # model_name = 'LSTM-AE_rotate_Ortho_Leaky_Temporal_InputSize_50_Seq_120_Threshold_0.045_Masking_Reduced_10'
 # model_name = 'LSTM-AE_rotate_Ortho_Leaky_Temporal_InputSize_50_Seq_120_Threshold_0.030_Reduced_10'
 
-pred_path = 'F:/srtp/$RTP/git_files/SRTP/v3/result/DANCE_%c_%d.json' %(dance_type,index)
+pred_path = 'F:/srtp/$RTP/git_files/SRTP/v2/result/DANCE_%c_%d.json' %(dance_type,index)
 audio_path = root_dir +'audio.mp3'
 target_path = root_dir +'skeletons.json'
 pred_video = root_dir +'output.mp4'
