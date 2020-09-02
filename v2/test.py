@@ -1,4 +1,4 @@
-from AE_LSTM_model import AE_LSTM_model
+from VAE_LSTM_FIX_model import VAE_LSTM_FIX_model
 
 if __name__ == '__main__':
     train_dirs = []
@@ -6,28 +6,25 @@ if __name__ == '__main__':
         for line in f.readlines():
             train_dirs.append(line[:-1])
     test_dirs=[
-        "../../../Music-to-Dance-Motion-Synthesis/DANCE_T_9"
+        "../../../Music-to-Dance-Motion-Synthesis/DANCE_W_3"
     ]
-    Model = AE_LSTM_model(
+    Model = VAE_LSTM_FIX_model(
         train_file_list=train_dirs,
-        model_save_dir='./model',
-        log_dir='./train_nn_log',
-        rnn_input_dim=32,
-        rnn_unit_size=32,
+        model_save_dir='./good_result/W/model',
+        log_dir='./good_result/W/train_nn_log',
+        motion_vae_ckpt_dir='./good_result/W/motion_vae_model/stock2.model-999',
+        music_vae_ckpt_dir='./good_result/W/music_vae_model/stock2.model-769',
+        rnn_unit_size=64,
         acoustic_dim=16,
         temporal_dim=3,
         motion_dim=63,
         time_step=120,
         batch_size=10,
-        learning_rate=1e-3,
-        extr_loss_threshold=0.045,
+        learning_rate=1e-4,
+        extr_loss_threshold=6e-4,
         overlap=True,
-        epoch_size=1500,
-        use_mask=True,
-
-        dense_dim=24,
-        lstm_output_dim=32,
-        reduced_size=10, )
+        epoch_size=1000,
+        use_mask=True)
 
     for test_file in test_dirs:
         Model.predict(test_file,'./result')

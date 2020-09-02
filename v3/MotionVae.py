@@ -14,8 +14,8 @@ class MotionVae:
         self.motion_dim=63
         self.dim_z=16
         self.ADD_NOISE = False
-        self.n_hidden = 500
-        self.epoch_size = 1000
+        self.n_hidden = 480
+        self.epoch_size = 500
         self.batch_size = 10
         self.learning_rate = 1e-5
         self.train_file_list=train_file_list
@@ -26,7 +26,7 @@ class MotionVae:
         self.log_dir=log_dir
     def init_dataset(self):
         self.train_dataset = DanceDataset(train_file_list=self.train_file_list,
-                                          acoustic_dim=16,
+                                          acoustic_dim=self.acoustic_dim,
                                           temporal_dim=3,
                                           motion_dim=63,
                                           time_step=self.time_step,
@@ -111,10 +111,7 @@ class MotionVae:
         y = self.motion_decoder(z, n_hidden, self.motion_dim)
         y = tf.clip_by_value(y, 1e-8, 1 - 1e-8)
 
-        #smoothness loss
-        loss_smo=tf.losses.mean_squared_error(y[1:],y[:-1])
 
-        #tf.reduce_mean(x, 0)
         # loss
         marginal_likelihood = tf.losses.mean_squared_error(target ,y)
         KL_divergence = 0.5 * tf.reduce_sum(tf.square(mu) + tf.square(sigma) - tf.log(1e-8 + tf.square(sigma)) - 1, 1)
@@ -122,11 +119,11 @@ class MotionVae:
         marginal_likelihood = tf.reduce_mean(marginal_likelihood)
         KL_divergence = tf.reduce_mean(KL_divergence)
 
+        ELBO = marginal_likelihood - KL_divergence
 
-        loss = marginal_likelihood+loss_smo
+        loss = marginal_likelihood
 
-
-        return y, z, loss, marginal_likelihood, KL_divergence,loss_smo
+        return y, z, loss, marginal_likelihood, KL_divergence
 
     def train(self,resume=False):
         motion_input = tf.placeholder(tf.float32, shape=[None, self.motion_dim])
@@ -134,7 +131,7 @@ class MotionVae:
 
 
 
-        y, z, loss, neg_marginal_likelihood, KL_divergence,loss_smoothness = self.motion_vae(motion_input, motion_target, self.n_hidden,self.dim_z)
+        y, z, loss, neg_marginal_likelihood, KL_divergence = self.motion_vae(motion_input, motion_target, self.n_hidden,self.dim_z)
 
         train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
         saver = tf.train.Saver(tf.global_variables(), max_to_keep=5)
@@ -171,12 +168,12 @@ class MotionVae:
                         motion_in = motion_in * np.random.randint(2, size=motion_in.shape)
                         motion_in += np.random.randint(2, size=motion_in.shape)
 
-                    test_y, test_z, _, tot_loss, loss_likelihood, loss_divergence,loss_smo = sess.run(
-                        [y, z, train_op, loss, neg_marginal_likelihood, KL_divergence,loss_smoothness],
+                    test_y, test_z, _, tot_loss, loss_likelihood, loss_divergence = sess.run(
+                        [y, z, train_op, loss, neg_marginal_likelihood, KL_divergence],
                         feed_dict={motion_input: motion_in, motion_target: motion_ta})
                     if step % 10 == 0:
-                        print("epoch: %d step: %d, L_tot %03.6f L_likelihood %03.6f L_divergence %03.6f  loss_smoothness %03.6f " % (
-                            i, step,tot_loss, loss_likelihood, loss_divergence,loss_smo))
+                        print("epoch: %d step: %d, L_tot %03.6f L_likelihood %03.6f L_divergence %03.6f " % (
+                            i, step,tot_loss, loss_likelihood, loss_divergence))
                 print("epoch %d: L_tot %03.2f L_likelihood %03.6f L_divergence %03.6f" % (i, tot_loss, loss_likelihood, loss_divergence))
                 if (i + 1) % 10 == 0:
                     print("保存模型：", saver.save(sess,os.path.join(self.model_save_dir,'stock2.model'), global_step=i))
@@ -186,13 +183,13 @@ class MotionVae:
         motion_input = tf.placeholder(tf.float32, shape=[None, self.motion_dim])
         motion_target = tf.placeholder(tf.float32, shape=[None,  self.motion_dim])
 
-        test_dataset,train_motion_scaler,test_size,center = self.train_dataset.load_test_data(test_file,0)
+        test_dataset,train_motion_scaler,test_size,center = self.train_dataset.load_test_data(test_file)
 
 
 
 
 
-        y, z, loss, neg_marginal_likelihood, KL_divergence,loss_smoothness = self.motion_vae(motion_input, motion_target, self.n_hidden, self.dim_z)
+        y, z, loss, neg_marginal_likelihood, KL_divergence = self.motion_vae(motion_input, motion_target, self.n_hidden, self.dim_z)
 
         saver = tf.train.Saver(tf.global_variables())
 

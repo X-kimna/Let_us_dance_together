@@ -15,7 +15,7 @@ class MusicVae:
         self.dim_z=8
         self.ADD_NOISE = False
         self.n_hidden = 500
-        self.epoch_size = 1000
+        self.epoch_size = 500
         self.batch_size = 10
         self.learning_rate = 1e-5
         self.train_file_list=train_file_list
@@ -110,8 +110,6 @@ class MusicVae:
             # decoding
             y = self.music_decoder(z, n_hidden, self.acoustic_dim)
             y = tf.clip_by_value(y, 1e-8, 1 - 1e-8)
-            # smoothness loss
-            loss_smo = tf.losses.mean_squared_error(y[1:], y[:-1])
 
             marginal_likelihood = tf.losses.mean_squared_error(target, y)
             KL_divergence = 0.5 * tf.reduce_sum(tf.square(mu) + tf.square(sigma) - tf.log(1e-8 + tf.square(sigma)) - 1, 1)
@@ -121,7 +119,7 @@ class MusicVae:
 
             ELBO = marginal_likelihood - KL_divergence
 
-            loss = marginal_likelihood+loss_smo
+            loss = marginal_likelihood
 
             return y, z, loss, marginal_likelihood, KL_divergence
 
@@ -173,7 +171,7 @@ class MusicVae:
                     if step % 10 == 0:
                         print("epoch: %d step: %d, L_tot %03.6f L_likelihood %03.6f L_divergence %03.6f " % (
                             i, step,tot_loss, loss_likelihood, loss_divergence))
-                print("epoch %d: L_tot %03.6f L_likelihood %03.6f L_divergence %03.6f" % (i, tot_loss, loss_likelihood, loss_divergence))
+                print("epoch %d: L_tot %03.6f L_likelihood %03.2f L_divergence %03.6f" % (i, tot_loss, loss_likelihood, loss_divergence))
                 if (i + 1) % 10 == 0:
                     print("保存模型：", saver.save(sess,os.path.join(self.model_save_dir,'stock2.model'), global_step=i))
 
