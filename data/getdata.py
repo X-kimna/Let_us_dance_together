@@ -11,6 +11,4 @@ for root, dirs, files in os.walk('F:/srtp/$RTP/Music-to-Dance-Motion-Synthesis/'
 for dir in dir_list:
     #os.makedirs('./'+dir)
     path=os.path.join('F:/srtp/$RTP/Music-to-Dance-Motion-Synthesis/',dir)
-    shutil.copy(os.path.join(path,'config.json'),os.path.join('./'+dir,'config.json'),)
-    shutil.copy(os.path.join(path, 'skeletons.json'), os.path.join('./' + dir, 'skeletons.json'), )
-    shutil.copy(os.path.join(path, 'skeletons.json'), os.path.join('./' + dir, 'skeletons.json'), )
+    shutil.copy(os.path.join(path,'audio.mp3'),os.path.join('./'+dir,'audio.mp3'),)
