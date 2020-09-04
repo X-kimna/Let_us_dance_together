@@ -188,5 +188,4 @@ class DanceDataset:
 
         test_dataset = tf.data.Dataset.from_tensor_slices(all_data)
         test_dataset = test_dataset.batch(self.batch_size)
-        print(self.train_motion_scaler)
         return test_dataset, self.train_motion_scaler, len(normalized_acoustic_data), center

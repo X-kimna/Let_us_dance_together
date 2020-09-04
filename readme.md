@@ -33,6 +33,7 @@ We provide three version training mode:
 1. v1: LSTM & autoencoder
 2. v2:  LSTM & fixed VAE model  (only training lstm, the vae is pretrained)
 3. v3:  LSTM & VAE model (training together)
+4. v4: LSTM & fixed VAE model  & Temporal Convolution
 
 ## Train
 
@@ -105,6 +106,10 @@ cd v3
 python train.py --train_dirs=../data/T_train_dirs.txt --learning_rate=1e-4 --epoch_size=500 --normalize_mode=standard
 ```
 
+#### V4
+
+ the same as v2
+
 ## Test
 
 for **v1,v2,v3,v4**, you can run the following `.py` files for testing
@@ -119,7 +124,7 @@ for **v1,v2,v3,v4**, you can run the following `.py` files for testing
 
 ## Visualization
 
-we provide `generate_dance_from_music.py` in `./v3` for you to generate a video that contains music and dance, for more vivid results, you can also get the  `.bvh` file.
+we provide `generate_dance_from_music.py` in `./v2` for you to generate a video that contains music and dance, for more vivid results, you can also get the  `.bvh` file.
 
 
 

@@ -8,13 +8,13 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected')
 
 parser = argparse.ArgumentParser(description='DanceNet AE_LSTM')
-parser.add_argument('-t', '--train_dirs', default='../data/R_train_dirs.txt', type=str,
+parser.add_argument('-t', '--train_dirs', default='../data/W_train_dirs.txt', type=str,
                         help='training data dirs file')
-parser.add_argument('-m', '--model_save_dir', default='./model', type=str, help='model save dir')
-parser.add_argument('-l', '--log_dir',default='./train_nn_log', type=str, help='log save dir')
+parser.add_argument('-m', '--model_save_dir', default='./model/W/model', type=str, help='model save dir')
+parser.add_argument('-l', '--log_dir',default='./model/W/train_nn_log', type=str, help='log save dir')
 parser.add_argument('--normalize_mode',default='minmax', type=str, help='normalize mode')
-parser.add_argument('--motion_vae_ckpt_dir',default='./model/C/motion_vae_model/stock2.model-999', type=str, help='motion vae model dir')
-parser.add_argument('--music_vae_ckpt_dir',default='./model/C/music_vae_model/stock2.model-999', type=str, help='music vae model dir')
+parser.add_argument('--motion_vae_ckpt_dir',default='./model/W/motion_vae_model/stock2.model-999', type=str, help='motion vae model dir')
+parser.add_argument('--music_vae_ckpt_dir',default='./model/W/music_vae_model/stock2.model-769', type=str, help='music vae model dir')
 parser.add_argument('--model_load_dir',default='./model', type=str, help='model load dir')
 
 parser.add_argument('--rnn_unit_size', default=32, type=int, help='rnn unit size')

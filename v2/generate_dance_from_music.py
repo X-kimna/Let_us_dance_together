@@ -174,7 +174,7 @@ spf = 0.04  # 40 ms
 sample_rate = 44100  #
 resample_rate = hop_length * fps
 
-music_dir= '../music/W'
+music_dir= '../music/T'
 music_name='Danube Waves'
 music_path=os.path.join(music_dir,music_name+'.mp3')
 duration =librosa.get_duration(filename=music_path)
@@ -211,7 +211,7 @@ Model = VAE_LSTM_FIX_model(
     overlap=True,
     epoch_size=1000,
     use_mask=True)
-result_save_dir= '../result/W'
+result_save_dir= '../result/T'
 Model.predict_from_music(acoustic_features, temporal_indexes,music_name,result_save_dir=result_save_dir)
 motion_path=os.path.join(result_save_dir,music_name+'.json')
 
