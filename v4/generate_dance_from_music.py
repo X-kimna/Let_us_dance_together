@@ -174,8 +174,11 @@ spf = 0.04  # 40 ms
 sample_rate = 44100  #
 resample_rate = hop_length * fps
 
-music_dir= '../music/W'
-music_name='Dance_W_32'
+
+
+music_type='C'
+music_dir= '../music/%s'%music_type
+music_name='Havana'
 music_path=os.path.join(music_dir,music_name+'.mp3')
 duration =librosa.get_duration(filename=music_path)
 
@@ -190,17 +193,17 @@ np.save(temporal_indexes_path, temporal_indexes)
 
 
 train_dirs = []
-with open('../data/W_train_dirs.txt', 'r')as f:
+with open('../data/%s_train_dirs.txt'%music_type, 'r')as f:
     for line in f.readlines():
         train_dirs.append(line[:-1])
 
 Model = VAE_LSTM_FIX_TCV_model(
     train_file_list=train_dirs,
-    model_save_dir='./model/W/model',
-    model_load_dir='./model/W/model',
+    model_save_dir='./model/%s/model'%music_type,
+    model_load_dir='./model/%s/model'%music_type,
     log_dir='./train_nn_log',
-    motion_vae_ckpt_dir='./model/W/motion_vae_model/stock2.model-999',
-    music_vae_ckpt_dir='./model/W/music_vae_model/stock2.model-769',
+    motion_vae_ckpt_dir='./model/%s/motion_vae_model/stock2.model-999'%music_type,
+    music_vae_ckpt_dir='./model/%s/music_vae_model/stock2.model-999'%music_type,
     rnn_unit_size=32,
     acoustic_dim=16,
     temporal_dim=3,
@@ -212,7 +215,7 @@ Model = VAE_LSTM_FIX_TCV_model(
     overlap=True,
     epoch_size=1000,
     use_mask=True)
-result_save_dir= '../result/W'
+result_save_dir= '../result/%s'%music_type
 Model.predict_from_music(acoustic_features, temporal_indexes,music_name,result_save_dir=result_save_dir)
 motion_path=os.path.join(result_save_dir,music_name+'.json')
 

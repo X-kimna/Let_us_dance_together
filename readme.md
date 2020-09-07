@@ -22,7 +22,7 @@ scikit-image             0.17.2
 
 ## dataset
 
-You can download the dataset from: 
+You can download the origin dataset from, we also provide preprocessed data in `./data`: 
 
 https://github.com/mhy12345/Music-to-Dance-Motion-Synthesis
 
@@ -160,7 +160,7 @@ e-mail: onethousand@zju.edu.cn
 
 ## Paper
 
-我们的工作（v1，v2部分）基于以下论文
+我们的工作（v1）基于以下论文
 
 ```
 @inproceedings{tang2018dance,
