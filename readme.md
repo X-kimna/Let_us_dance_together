@@ -162,7 +162,7 @@ e-mail: onethousand@zju.edu.cn
 
 TCN:
 
-https://github.com/colincsl/TemporalConvolutionalNetworks
+https://github.com/YuanTingHsieh/TF_TCN
 
 ## Paper
 
@@ -183,13 +183,13 @@ https://github.com/colincsl/TemporalConvolutionalNetworks
 	year={2018},
 	organization={ACM}
 }
-@misc{lea2016temporal,
-    title={Temporal Convolutional Networks for Action Segmentation and Detection},
-    author={Colin Lea and Michael D. Flynn and Rene Vidal and Austin Reiter and Gregory D. Hager},
-    year={2016},
-    eprint={1611.05267},
+@misc{bai2018trellis,
+    title={Trellis Networks for Sequence Modeling},
+    author={Shaojie Bai and J. Zico Kolter and Vladlen Koltun},
+    year={2018},
+    eprint={1810.06682},
     archivePrefix={arXiv},
-    primaryClass={cs.CV}
+    primaryClass={cs.LG}
 }
 ```
 
