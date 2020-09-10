@@ -158,9 +158,13 @@ You can get the final results of **v3** from:
 
 e-mail: onethousand@zju.edu.cn
 
-## Paper
+## reference
 
-我们的工作（v1）基于以下论文
+TCN:
+
+https://github.com/colincsl/TemporalConvolutionalNetworks
+
+## Paper
 
 ```
 @inproceedings{tang2018dance,
@@ -178,6 +182,14 @@ e-mail: onethousand@zju.edu.cn
 	pages={1237--1239},
 	year={2018},
 	organization={ACM}
+}
+@misc{lea2016temporal,
+    title={Temporal Convolutional Networks for Action Segmentation and Detection},
+    author={Colin Lea and Michael D. Flynn and Rene Vidal and Austin Reiter and Gregory D. Hager},
+    year={2016},
+    eprint={1611.05267},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
 }
 ```
 
