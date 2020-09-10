@@ -61,9 +61,7 @@ python train_motion_vae.py
 python train_music_vae.py
 ```
 
-
-
-We also provide pretrained VAE model :
+We also provide pretrained VAE models :
 
 **baiduYun**
 
@@ -71,8 +69,6 @@ We also provide pretrained VAE model :
 提取码：pbso
 
 Download the files in `VAE` and put them at `v2/model`
-
-
 
 then :
 
@@ -97,9 +93,7 @@ cd v3
 python train.py
 ```
 
-
-
-You can also change the training details by your self,  (see the `./options/AE_options.py`) , for example:
+You can also change the training details by yourself,  (see the `./options/AE_options.py`) , for example:
 
 ```
 cd v3
@@ -124,7 +118,9 @@ for **v1,v2,v3,v4**, you can run the following `.py` files for testing
 
 ## Visualization
 
-we provide `generate_dance_from_music.py` in `./v2` for you to generate a video that contains music and dance, for more vivid results, you can also get the  `.bvh` file.
+we provide `generate_dance_from_music.py` in `./v2` for you to generate a video that contains music and dance, for more vivid results, you can also get the  `.bvh` file. 
+
+The `.bvh` file is used to drive the rigged 3D model to move, we use a simple application **liveAnimation** to do this work, more details can be find :
 
 
 
@@ -153,6 +149,8 @@ You can get the final results of **v3** from:
 
 链接：https://pan.baidu.com/s/1lAHzNf4dJj6PNh-ZhSG5XA 
 提取码：sk7n
+
+We will upload more videos in the future.
 
 ## contact
 
