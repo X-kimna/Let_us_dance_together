@@ -68,6 +68,10 @@ We also provide pretrained VAE models :
 链接：https://pan.baidu.com/s/1VxklDyWodBikT-DM9W-pFQ 
 提取码：pbso
 
+**Google Drive**
+
+https://drive.google.com/drive/folders/1wC8vxr8t7rCedVA1g2g4YZ1E5xhQobZr?usp=sharing
+
 Download the files in `VAE` and put them at `v2/model`
 
 then :
@@ -141,6 +145,10 @@ You can get the pretrained model of **v3** from:
 链接：https://pan.baidu.com/s/1VxklDyWodBikT-DM9W-pFQ 
 提取码：pbso
 
+**Google Drive**
+
+https://drive.google.com/drive/folders/1wC8vxr8t7rCedVA1g2g4YZ1E5xhQobZr?usp=sharing
+
 ## Result
 
 You can get the final results of **v3** from: 
@@ -149,6 +157,10 @@ You can get the final results of **v3** from:
 
 链接：https://pan.baidu.com/s/1lAHzNf4dJj6PNh-ZhSG5XA 
 提取码：sk7n
+
+**Google Drive**
+
+https://drive.google.com/drive/folders/1gU2DN0RYrphlHBmLh-IXjw9wlO-qcRfi?usp=sharing
 
 We will upload more videos in the future.
 
